@@ -2,6 +2,9 @@ import { createClient } from '@supabase/supabase-js'
 
 const rawUrl = import.meta.env.VITE_SUPABASE_URL || ''
 const rawKey = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+console.log("URL =", import.meta.env.VITE_SUPABASE_URL)
+console.log("KEY =", import.meta.env.VITE_SUPABASE_ANON_KEY)
+console.log("MODE =", import.meta.env.MODE)
 
 // Validate that the URL is a proper HTTP/HTTPS URL before passing to Supabase
 const isValidUrl = (url) => {
