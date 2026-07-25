@@ -1,6 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 
 // Shared UI components
 import Navbar from './components/Navbar'
@@ -89,6 +90,7 @@ export default function App() {
             }
           />
         </Routes>
+        <SpeedInsights />
       </Router>
     </AuthProvider>
   )
