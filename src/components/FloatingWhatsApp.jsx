@@ -3,7 +3,7 @@ import { MessageSquare } from 'lucide-react'
 import { supabase } from '../supabaseClient'
 
 export default function FloatingWhatsApp() {
-  const [phone, setPhone] = useState('919876543210')
+  const [phone, setPhone] = useState('919150226356')
   const [message, setMessage] = useState('Hello, I would like to know more about your event services.')
 
   useEffect(() => {
@@ -14,7 +14,7 @@ export default function FloatingWhatsApp() {
           .select('value')
           .eq('key', 'contact_info')
           .single()
-        
+
         if (data && data.value && data.value.whatsapp) {
           // Strip non-numbers from whatsapp config
           const cleaned = data.value.whatsapp.replace(/\D/g, '')
@@ -39,10 +39,10 @@ export default function FloatingWhatsApp() {
     >
       {/* Pulse Outer Rings */}
       <span className="absolute inset-0 rounded-full border border-gold opacity-75 animate-ping pointer-events-none group-hover:hidden" />
-      
+
       {/* Premium Message Icon resembling WhatsApp */}
       <MessageSquare className="w-6 h-6 transition-transform duration-300 group-hover:rotate-12" />
-      
+
       {/* Tooltip */}
       <span className="absolute right-16 bg-luxury-black/90 text-gold text-xs uppercase tracking-widest px-3 py-1.5 rounded border border-gold/25 opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap shadow-md">
         Inquire on WhatsApp

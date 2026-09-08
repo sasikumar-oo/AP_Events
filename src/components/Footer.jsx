@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Mail, Phone, MapPin, Instagram, Facebook, ArrowRight } from 'lucide-react'
 import { supabase } from '../supabaseClient'
+import logoImg from '../videos/logo.ap.png'
 
 export default function Footer() {
   const [contact, setContact] = useState({
-    phone: '+91 98765 43210',
+    phone: '+91 91502 26356',
     email: 'info@apevents.com',
-    address: 'AP Luxury Towers, MG Road, Kochi, Kerala - 682016',
-    instagram: '@ap_events_luxury',
-    facebook: 'ap.events.luxury'
+    address: 'AP Events, Ganapathy Nagar, Vanagaram, Chennai, Tamil Nadu 600095',
+    instagram: '@ap_events_management',
+    facebook: 'ap_events_management'
   })
 
   useEffect(() => {
@@ -20,7 +21,7 @@ export default function Footer() {
           .select('value')
           .eq('key', 'contact_info')
           .single()
-        
+
         if (data && data.value) {
           setContact(data.value)
         }
@@ -40,9 +41,13 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16 relative z-10">
         {/* Brand Information */}
         <div>
-          <span className="font-playfair text-2xl font-bold tracking-widest text-gold block mb-6">
-            AP EVENTS
-          </span>
+          <Link to="/" className="inline-block mb-6">
+            <img
+              src={logoImg}
+              alt="AP Events Logo"
+              className="h-16 md:h-20 w-auto object-contain"
+            />
+          </Link>
           <p className="text-luxury-muted text-sm leading-relaxed mb-6 font-poppins">
             Designing and executing high-end events across the country. From regal weddings to high-impact corporate summits, we make every moment golden.
           </p>
@@ -92,9 +97,15 @@ export default function Footer() {
             Signature Services
           </h4>
           <ul className="space-y-3 text-sm text-luxury-muted">
-            {['Luxury Weddings', 'Corporate Conclaves', 'Chenda Melam Beats', 'Premium Photography', 'Exclusive DJ & Band'].map((svc) => (
-              <li key={svc} className="hover:text-gold transition-colors duration-300 cursor-pointer">
-                <Link to="/services">{svc}</Link>
+            {[
+              { name: 'Luxury Weddings', path: '/services/wedding-planning' },
+              { name: 'Corporate Galas', path: '/services/corporate-events' },
+              { name: 'Chenda Melam Beats', path: '/services/chenda-melam' },
+              { name: 'Candid Photography', path: '/services/photography' },
+              { name: 'Exclusive DJ Setup', path: '/services/dj-music' }
+            ].map((svc) => (
+              <li key={svc.name} className="hover:text-gold transition-colors duration-300">
+                <Link to={svc.path}>{svc.name}</Link>
               </li>
             ))}
           </ul>

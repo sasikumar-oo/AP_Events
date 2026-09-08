@@ -6,16 +6,18 @@ import { supabase } from '../supabaseClient'
 
 export default function About() {
   const [content, setContent] = useState({
-    title: 'Defining Luxury Event Management',
-    description: 'At AP Events, we believe in bringing dreams to life with grandeur and style. Based in the heart of Kerala, we specialize in organizing high-end weddings, high-powered corporate meetings, traditional temple events featuring majestic Chenda Melam, and elegant private functions.',
+    title: 'Welcome to AP Events',
+    description: 'At AP Events, we transform your dream celebrations into unforgettable memories. From intimate family gatherings to grand weddings and corporate events, our experienced team plans every detail with creativity and professionalism. Based in the heart of Kerala, we specialize in organizing high-end weddings, high-powered corporate meetings, traditional temple events featuring majestic Chenda Melam, and elegant private functions.',
     vision: 'To be the ultimate benchmark of luxury event execution, blending rich cultural heritage with contemporary modern design.',
     mission: 'Delivering unparalleled events through precision management, opulent designs, and customized client services, making every milestone a timeless memory.',
     points: [
-      'Over 10 Years of Premium Industry Experience',
-      'Signature Gold & Black Luxury Art Direction',
-      'Comprehensive In-House Event Productions',
-      '24/7 Security and VIP Hostess Services'
-    ]
+      ' Complete Event Planning',
+      ' Experienced Team',
+      ' Affordable Packages',
+      ' Customized Decorations',
+      ' Premium Quality',
+      ' On-Time Execution',
+      ' 24/7 Customer Support']
   })
   const [loading, setLoading] = useState(true)
 
@@ -47,8 +49,8 @@ export default function About() {
   // Sample premium team data
   const team = [
     {
-      name: 'Aditya Pillai',
-      role: 'Founder & Principal Designer',
+      name: 'Prasanth',
+      role: 'Owner',
       image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400'
     },
     {

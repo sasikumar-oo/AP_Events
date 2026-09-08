@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { X, Play, ChevronLeft, ChevronRight } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, ExternalLink, Instagram } from 'lucide-react'
 
 export default function Lightbox({ media, onClose, onPrev, onNext }) {
   useEffect(() => {
@@ -20,6 +20,25 @@ export default function Lightbox({ media, onClose, onPrev, onNext }) {
     }
   }, [onClose, onPrev, onNext])
 
+  // Load and trigger Instagram official embed script when Instagram content is viewed
+  useEffect(() => {
+    if (media?.media_type === 'instagram') {
+      if (!window.instgrm) {
+        const script = document.createElement('script')
+        script.src = 'https://www.instagram.com/embed.js'
+        script.async = true
+        script.onload = () => {
+          if (window.instgrm) {
+            window.instgrm.Embeds.process()
+          }
+        }
+        document.body.appendChild(script)
+      } else {
+        window.instgrm.Embeds.process()
+      }
+    }
+  }, [media])
+
   if (!media) return null
 
   // Function to render the specific media type
@@ -35,7 +54,11 @@ export default function Lightbox({ media, onClose, onPrev, onNext }) {
       } else if (media_url.includes('youtu.be/')) {
         const videoId = media_url.split('youtu.be/')[1]?.split('?')[0]
         embedUrl = `https://www.youtube.com/embed/${videoId}`
+      } else if (media_url.includes('shorts/')) {
+        const videoId = media_url.split('shorts/')[1]?.split('?')[0]
+        embedUrl = `https://www.youtube.com/embed/${videoId}`
       }
+
       return (
         <div className="relative w-full max-w-4xl aspect-video glass-card overflow-hidden rounded-md border border-gold/30">
           <iframe
@@ -50,22 +73,65 @@ export default function Lightbox({ media, onClose, onPrev, onNext }) {
     }
 
     if (media_type === 'instagram') {
-      // Instagram reels embed format
-      let embedUrl = media_url
-      if (!embedUrl.endsWith('/embed')) {
-        // Strip trailing slash if present then append /embed
-        embedUrl = `${embedUrl.replace(/\/$/, '')}/embed`
+      // Format clean Instagram permalink and embed URL
+      let rawUrl = (media_url || '').trim()
+      // Remove trailing /embed or query parameters for direct link
+      let cleanPermalink = rawUrl
+        .replace(/\/embed\/?.*$/i, '')
+        .replace(/\/$/, '')
+      if (!cleanPermalink.startsWith('http')) {
+        cleanPermalink = `https://${cleanPermalink}`
       }
+
+      // Standard Instagram embed URL format
+      const embedUrl = `${cleanPermalink}/embed`
+
       return (
-        <div className="relative w-full max-w-sm h-[75vh] glass-card overflow-hidden rounded-md border border-gold/30">
-          <iframe
-            src={embedUrl}
-            title={title || 'Instagram Reel'}
-            className="absolute inset-0 w-full h-full"
-            frameBorder="0"
-            scrolling="no"
-            allowTransparency="true"
-          />
+        <div className="relative w-full max-w-md glass-card rounded-md border border-gold/30 flex flex-col items-center overflow-hidden shadow-2xl">
+          {/* Top Instagram Header Bar */}
+          <div className="w-full bg-luxury-black/90 border-b border-gold/15 px-4 py-3 flex items-center justify-between z-10">
+            <div className="flex items-center gap-2">
+              <Instagram size={18} className="text-pink-500 shrink-0" />
+              <span className="text-xs font-poppins font-semibold text-white truncate max-w-[200px]">
+                {title || 'Instagram Media'}
+              </span>
+            </div>
+            <a
+              href={cleanPermalink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] uppercase font-bold tracking-wider text-gold hover:text-white flex items-center gap-1 bg-gold/10 border border-gold/30 px-2.5 py-1 rounded-sm transition-colors shrink-0"
+            >
+              Open <ExternalLink size={10} />
+            </a>
+          </div>
+
+          {/* Embed Container */}
+          <div className="relative w-full h-[65vh] min-h-[420px] bg-black/80 flex items-center justify-center overflow-hidden">
+            <iframe
+              src={embedUrl}
+              title={title || 'Instagram Reel'}
+              className="w-full h-full border-0"
+              scrolling="no"
+              allowTransparency="true"
+              allow="encrypted-media"
+            />
+          </div>
+
+          {/* Bottom Action Footer for direct access if embed is restricted by Instagram policy */}
+          <div className="w-full bg-luxury-black/95 border-t border-gold/15 p-3.5 text-center z-10 space-y-2">
+            <p className="text-[10px] text-luxury-muted font-poppins">
+              If Instagram restricts frame playback in your browser:
+            </p>
+            <a
+              href={cleanPermalink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:from-purple-500 hover:to-amber-400 text-white text-xs font-bold px-5 py-2 rounded-sm shadow-gold-glow transition-all uppercase tracking-wider"
+            >
+              <Instagram size={14} /> Watch Directly on Instagram <ExternalLink size={12} />
+            </a>
+          </div>
         </div>
       )
     }
@@ -145,3 +211,4 @@ export default function Lightbox({ media, onClose, onPrev, onNext }) {
     </div>
   )
 }
+

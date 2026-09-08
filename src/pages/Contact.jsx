@@ -8,10 +8,10 @@ import { supabase } from '../supabaseClient'
 export default function Contact() {
   const [searchParams] = useSearchParams()
   const [contact, setContact] = useState({
-    phone: '+91 98765 43210',
+    phone: '+91 91502 26356',
     email: 'info@apevents.com',
-    address: 'AP Luxury Towers, MG Road, Kochi, Kerala - 682016',
-    google_map_url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3929.800057038965!2d76.27961237583647!3d9.950616176662483!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b080d38ff3a9fd5%3A0xc3cf9c98bc02140a!2sMG%20Road%2C%20Kochi%2C%20Kerala!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin'
+    address: 'AP Events, Ganapathy Nagar, Vanagaram, Chennai, Tamil Nadu 600095',
+    google_map_url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d242.92126021327064!2d80.16131962091578!3d13.052204319950217!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a52610007f91e69%3A0x6f26634a232672c1!2sAp%20events!5e0!3m2!1sen!2sin!4v1788776339713!5m2!1sen!2sin'
   })
 
   // Form State
@@ -58,7 +58,7 @@ export default function Contact() {
     // Validation
     if (!name.trim()) return setError('Please specify your name.')
     if (!phone.trim()) return setError('Please specify your contact phone number.')
-    
+
     setSubmitting(true)
 
     try {
@@ -113,7 +113,7 @@ export default function Contact() {
       {/* Main Grid: Form and Coordinates */}
       <section className="py-24 bg-luxury-bg relative">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16">
-          
+
           {/* 1. Contact Form (Left) */}
           <div className="lg:col-span-7 glass-card p-8 sm:p-12 rounded-sm border border-gold/15">
             <h2 className="text-2xl font-playfair text-gold uppercase tracking-widest mb-2 font-bold">
@@ -124,7 +124,7 @@ export default function Contact() {
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              
+
               {/* Error and Success Banners */}
               {error && (
                 <div className="flex items-center gap-2 border border-red-500/30 bg-red-500/10 p-4 rounded-sm text-red-400 text-xs">
@@ -174,9 +174,9 @@ export default function Contact() {
                     className="w-full bg-luxury-black/60 border border-gold/25 rounded-sm px-4 py-3 text-sm text-white focus:outline-none focus:border-gold focus:shadow-gold-glow transition-all duration-300 font-poppins appearance-none cursor-pointer"
                   >
                     {[
-                      'Weddings', 'Corporate Events', 'College Functions', 'Birthday Parties', 
-                      'Temple Events', 'Chenda Melam', 'DJ Music', 'Photography', 
-                      'Balloon Decoration', 'Event Decoration', 'Welcome Hostesses', 
+                      'Weddings', 'Corporate Events', 'College Functions', 'Birthday Parties',
+                      'Temple Events', 'Chenda Melam', 'DJ Music', 'Photography',
+                      'Balloon Decoration', 'Event Decoration', 'Welcome Hostesses',
                       'Bridal Makeup', 'Security Services', 'Dhol & Band Players'
                     ].map(type => (
                       <option key={type} value={type} className="bg-luxury-black text-white">{type}</option>

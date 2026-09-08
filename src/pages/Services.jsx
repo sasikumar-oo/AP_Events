@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Helmet } from 'react-helmet-async'
-import { 
-  Sparkles, Heart, Briefcase, GraduationCap, Cake, 
+import {
+  Sparkles, Heart, Briefcase, GraduationCap, Cake,
   Music, Camera, Gift, Users, ShieldAlert, Award
 } from 'lucide-react'
 
@@ -14,9 +14,9 @@ export default function Services() {
 
   const services = [
     {
-      title: 'Weddings',
+      title: 'Wedding Planning',
       category: 'Signature Events',
-      desc: 'Regal mandap configurations, customized seating layouts, elite hospitality management, and traditional ritual planning.',
+      desc: 'Traditional weddings, Reception, Engagement, and Destination wedding.',
       features: ['Palace Partnerships', 'Couture Floral Designs', 'VIP Guest Coordination'],
       img: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=600',
       icon: <Heart size={20} />
@@ -127,8 +127,8 @@ export default function Services() {
     }
   ]
 
-  const filteredServices = activeTab === 'All' 
-    ? services 
+  const filteredServices = activeTab === 'All'
+    ? services
     : services.filter(s => s.category === activeTab)
 
   return (
@@ -157,11 +157,10 @@ export default function Services() {
             <button
               key={cat}
               onClick={() => setActiveTab(cat)}
-              className={`px-5 py-2 text-xs uppercase tracking-widest font-semibold border rounded-sm transition-all duration-300 ${
-                activeTab === cat
-                  ? 'bg-gold text-luxury-black border-gold shadow-gold-glow'
-                  : 'border-gold/20 text-white/80 hover:border-gold hover:text-gold'
-              }`}
+              className={`px-5 py-2 text-xs uppercase tracking-widest font-semibold border rounded-sm transition-all duration-300 ${activeTab === cat
+                ? 'bg-gold text-luxury-black border-gold shadow-gold-glow'
+                : 'border-gold/20 text-white/80 hover:border-gold hover:text-gold'
+                }`}
             >
               {cat}
             </button>
@@ -190,7 +189,7 @@ export default function Services() {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-luxury-black via-luxury-black/30 to-transparent" />
-                  
+
                   {/* Floating Category badge */}
                   <span className="absolute top-4 right-4 bg-luxury-black/90 border border-gold/30 px-3 py-1 rounded-sm text-[9px] uppercase tracking-widest text-gold font-poppins">
                     {svc.category}

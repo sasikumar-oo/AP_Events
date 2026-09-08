@@ -12,6 +12,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
 import About from './pages/About'
 import Services from './pages/Services'
+import ServiceDetail from './pages/ServiceDetail'
 import Events from './pages/Events'
 import EventDetail from './pages/EventDetail'
 import Gallery from './pages/Gallery'
@@ -31,8 +32,7 @@ function PublicLayout() {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      {/* Content offset for fixed navbar */}
-      <div className="flex-grow pt-[73px] md:pt-[85px]">
+      <div className="flex-grow">
         <Outlet />
       </div>
       <Footer />
@@ -51,6 +51,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/services/:slug" element={<ServiceDetail />} />
             <Route path="/events" element={<Events />} />
             <Route path="/events/:slug" element={<EventDetail />} />
             <Route path="/gallery" element={<Gallery />} />

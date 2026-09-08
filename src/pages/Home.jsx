@@ -7,8 +7,8 @@ import { supabase } from '../supabaseClient'
 
 export default function Home() {
   const [hero, setHero] = useState({
-    title: 'Crafting Extraordinary Luxury Experiences',
-    subtitle: 'AP Events is the premier event planner specializing in royal weddings, grand corporate events, traditional temple festivals, and elite private gatherings.',
+    title: 'Creating Unforgettable Events with Perfection',
+    subtitle: 'AP Events specializes in weddings, Birthdays, corporate events, college functions, Stage Decorations, Catering, Entertainment, Photography & Complete Event Solutions.',
     bg_image: 'https://images.unsplash.com/photo-1469371670807-013ccf25f16a?auto=format&fit=crop&q=80&w=1920',
     cta_text: 'Plan Your Event'
   })
@@ -83,19 +83,33 @@ export default function Home() {
 
       {/* 1. HERO SECTION */}
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-black">
-        {/* Parallax Background Image */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105"
-          style={{ 
-            backgroundImage: `linear-gradient(to bottom, rgba(11, 11, 11, 0.4) 0%, rgba(11, 11, 11, 0.9) 100%), url(${hero.bg_image})` 
-          }}
-        />
+        {/* Autoplay Luxury Background Hero Video */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster={hero.bg_image || 'https://images.unsplash.com/photo-1469371670807-013ccf25f16a?auto=format&fit=crop&q=80&w=1920'}
+          className="absolute inset-0 w-full h-full object-cover scale-105"
+        >
+          <source
+            src={hero.bg_video || 'src/videos/Video Project 1.mp4'}
+            type="video/mp4"
+          />
+          <source
+            src="src/videos/Video Project 1.mp4"
+            type="video/mp4"
+          />
+        </video>
+
+        {/* Lightened Dark Gradient Overlay for Maximum Video Clarity */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/35 to-black/60" />
 
         {/* Overlay grid overlay */}
         <div className="absolute inset-0 grid-bg opacity-20" />
 
         {/* Main Content */}
-        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 w-full text-left">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -110,7 +124,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.3 }}
-            className="text-4xl sm:text-6xl md:text-8xl font-playfair font-bold text-white mb-6 uppercase tracking-wider leading-none"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-playfair font-bold text-white mb-6 uppercase tracking-wider leading-tight max-w-5xl"
           >
             {hero.title.split(' ').map((word, i) => (
               <span key={i} className={i % 2 === 1 ? 'text-gold-gradient block sm:inline' : 'block sm:inline mr-4'}>
@@ -123,7 +137,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.6 }}
-            className="text-luxury-muted font-poppins text-base md:text-xl max-w-3xl mx-auto mb-10 leading-relaxed font-light"
+            className="text-luxury-muted font-poppins text-base md:text-xl max-w-3xl mb-10 leading-relaxed font-light"
           >
             {hero.subtitle}
           </motion.p>
@@ -132,19 +146,19 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.8 }}
-            className="flex flex-col sm:flex-row justify-center items-center gap-6"
+            className="flex flex-col sm:flex-row justify-start items-center gap-6"
           >
             <Link
               to="/contact"
-              className="bg-gold-gradient text-luxury-black font-semibold uppercase tracking-widest text-sm px-8 py-4 rounded-sm shadow-gold-glow-lg hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] hover:scale-105 active:scale-95 transition-all duration-300 w-full sm:w-auto text-center"
+              className="bg-gold-gradient text-luxury-black font-semibold uppercase tracking-widest  text-sm px-8 py-4 rounded-full shadow-gold-glow-lg hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] hover:scale-105 active:scale-95 transition-all duration-300 w-full sm:w-auto text-center"
             >
               {hero.cta_text}
             </Link>
             <Link
               to="/services"
-              className="btn-gold-outline px-8 py-4 text-sm font-semibold uppercase tracking-widest rounded-sm w-full sm:w-auto text-center"
+              className="btn-gold-outline px-6 py-3 text-sm font-semibold uppercase tracking-widest rounded-full w-full sm:w-auto text-center"
             >
-              Explore Services
+              Explore Service
             </Link>
           </motion.div>
         </div>
@@ -359,7 +373,7 @@ export default function Home() {
       {/* 5. TESTIMONIALS */}
       <section className="py-24 bg-luxury-bg relative overflow-hidden border-b border-gold/10">
         <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 blur-[150px] rounded-full pointer-events-none" />
-        
+
         <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
           <span className="text-gold font-poppins text-xs uppercase tracking-widest font-semibold">Accolades</span>
           <h2 className="text-3xl sm:text-5xl font-playfair font-bold text-white uppercase mt-2 mb-16">

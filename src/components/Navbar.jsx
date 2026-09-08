@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Menu, X, ShieldAlert } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import logoImg from '../videos/logo.ap.png'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -39,18 +40,26 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 border-b ${
-        isScrolled
-          ? 'bg-luxury-black/90 backdrop-blur-md py-4 border-gold/25 shadow-gold-glow'
-          : 'bg-transparent py-6 border-transparent'
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
+        isScrolled ? 'py-3 px-4 md:px-8' : 'py-6 px-4 md:px-8'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+      <div
+        className={`max-w-7xl mx-auto px-8 flex justify-between items-center transition-all duration-500 rounded-full ${
+          isScrolled
+            ? 'py-3 bg-luxury-black/75 backdrop-blur-xl border border-gold/30 shadow-[0_8px_32px_0_rgba(0,0,0,0.6),0_0_20px_rgba(212,175,55,0.15)]'
+            : 'py-3 bg-transparent border border-transparent shadow-none'
+        }`}
+      >
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2 group">
-          <span className="font-playfair text-2xl md:text-3xl font-bold tracking-widest text-gold group-hover:text-gold-light transition-colors duration-300">
-            AP<span className="text-white group-hover:text-gold transition-colors duration-300"> EVENTS</span>
-          </span>
+          <img
+            src={logoImg}
+            alt="AP Events Logo"
+            className={`w-auto object-contain transition-all duration-500 group-hover:scale-105 ${
+              isScrolled ? 'h-12 md:h-16 lg:h-18' : 'h-16 md:h-20 lg:h-24'
+            }`}
+          />
         </Link>
 
         {/* Desktop Navigation Links */}
@@ -79,7 +88,7 @@ export default function Navbar() {
           {user && (
             <Link
               to="/admin/dashboard"
-              className="flex items-center gap-1.5 border border-gold/50 text-gold px-3 py-1.5 rounded text-xs uppercase tracking-wider hover:bg-gold hover:text-luxury-black transition-all duration-300 font-semibold"
+              className="flex items-center gap-1.5 border border-gold/50 text-gold px-3.5 py-1.5 rounded-full text-xs uppercase tracking-wider hover:bg-gold hover:text-luxury-black transition-all duration-300 font-semibold"
             >
               <ShieldAlert size={14} />
               Admin Portal
@@ -88,7 +97,7 @@ export default function Navbar() {
 
           <Link
             to="/contact"
-            className="btn-gold-outline px-6 py-2 text-xs uppercase tracking-widest font-semibold rounded-sm"
+            className="btn-gold-outline px-6 py-2 text-xs uppercase tracking-widest font-semibold rounded-full"
           >
             Inquire Now
           </Link>

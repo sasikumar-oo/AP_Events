@@ -233,12 +233,23 @@ export default function ContentManager() {
                 />
               </div>
               <div>
-                <label className={labelClasses}>Background Image URL</label>
+                <label className={labelClasses}>Background Image URL (Poster Fallback)</label>
                 <input
                   type="url"
                   value={hero.bg_image || ''}
                   onChange={(e) => setHero({ ...hero, bg_image: e.target.value })}
                   className={inputClasses}
+                  placeholder="https://..."
+                />
+              </div>
+              <div>
+                <label className={labelClasses}>Background Video URL (.mp4)</label>
+                <input
+                  type="url"
+                  value={hero.bg_video || ''}
+                  onChange={(e) => setHero({ ...hero, bg_video: e.target.value })}
+                  className={inputClasses}
+                  placeholder="https://.../video.mp4"
                 />
               </div>
             </div>
