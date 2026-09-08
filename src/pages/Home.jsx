@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { Helmet } from 'react-helmet-async'
 import { Calendar, MapPin, ArrowRight, Star, Sparkles, PhoneCall, Gift, Shield } from 'lucide-react'
 import { supabase } from '../supabaseClient'
+import heroVideo from '../videos/Video Project 1.mp4'
 
 export default function Home() {
   const [hero, setHero] = useState({
@@ -93,11 +94,7 @@ export default function Home() {
           className="absolute inset-0 w-full h-full object-cover scale-105"
         >
           <source
-            src={hero.bg_video || 'src/videos/Video Project 1.mp4'}
-            type="video/mp4"
-          />
-          <source
-            src="src/videos/Video Project 1.mp4"
+            src={hero.bg_video || heroVideo}
             type="video/mp4"
           />
         </video>
