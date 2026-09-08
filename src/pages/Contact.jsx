@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
-import { Mail, Phone, MapPin, Send, CheckCircle2, AlertCircle } from 'lucide-react'
+import { Mail, Phone, MapPin, Send, CheckCircle2, AlertCircle, MessageSquare, ExternalLink } from 'lucide-react'
 import { supabase } from '../supabaseClient'
+import { generateWhatsAppUrl, sendEmailNotification } from '../services/notificationService'
 
 export default function Contact() {
   const [searchParams] = useSearchParams()
@@ -20,6 +21,9 @@ export default function Contact() {
   const [eventType, setEventType] = useState('Weddings')
   const [eventDate, setEventDate] = useState('')
   const [message, setMessage] = useState('')
+
+  // Notification Link State
+  const [lastSubmittedWhatsAppUrl, setLastSubmittedWhatsAppUrl] = useState('')
 
   // UI state
   const [submitting, setSubmitting] = useState(false)
@@ -62,6 +66,7 @@ export default function Contact() {
     setSubmitting(true)
 
     try {
+      // 1. Save to Supabase DB
       const { error: dbErr } = await supabase
         .from('enquiries')
         .insert([
@@ -75,6 +80,26 @@ export default function Contact() {
         ])
 
       if (dbErr) throw dbErr
+
+      // 2. Generate WhatsApp URL
+      const waUrl = generateWhatsAppUrl({
+        name: name.trim(),
+        phone: phone.trim(),
+        email: '',
+        eventType,
+        eventDate,
+        message: message.trim()
+      })
+      setLastSubmittedWhatsAppUrl(waUrl)
+
+      // 3. Send Email Notification in background
+      sendEmailNotification({
+        name: name.trim(),
+        phone: phone.trim(),
+        eventType,
+        eventDate,
+        message: message.trim()
+      }).catch(err => console.error('Email notify background error:', err))
 
       setSuccess(true)
       setName('')
@@ -134,9 +159,24 @@ export default function Contact() {
               )}
 
               {success && (
-                <div className="flex items-center gap-2 border border-gold/30 bg-gold/10 p-4 rounded-sm text-gold text-xs">
-                  <CheckCircle2 size={16} />
-                  <span>Your luxury enquiry has been logged successfully! Our team will contact you shortly.</span>
+                <div className="border border-gold/40 bg-gold/10 p-5 rounded-sm space-y-4">
+                  <div className="flex items-center gap-2 text-gold text-xs font-bold font-poppins uppercase tracking-wider">
+                    <CheckCircle2 size={18} />
+                    <span>Inquiry Logged & Email Notification Sent!</span>
+                  </div>
+                  <p className="text-white/80 text-xs font-poppins leading-relaxed">
+                    Thank you! Your details have been submitted to our team. For instant priority response, you can also send your inquiry directly via WhatsApp:
+                  </p>
+                  {lastSubmittedWhatsAppUrl && (
+                    <a
+                      href={lastSubmittedWhatsAppUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-green-500 hover:from-emerald-500 hover:to-green-400 text-white font-bold text-xs px-5 py-2.5 rounded-sm shadow-md uppercase tracking-wider transition-all"
+                    >
+                      <MessageSquare size={16} /> Send Copy via WhatsApp <ExternalLink size={12} />
+                    </a>
+                  )}
                 </div>
               )}
 

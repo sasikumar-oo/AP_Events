@@ -4,10 +4,11 @@ import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import {
   ArrowLeft, CheckCircle2, Calendar, Phone, Mail, User,
-  HelpCircle, Sparkles, ShieldCheck, Award, MessageSquare
+  HelpCircle, Sparkles, ShieldCheck, Award, MessageSquare, ExternalLink
 } from 'lucide-react'
 import { getServiceBySlug, servicesData } from '../data/servicesData'
 import { supabase } from '../supabaseClient'
+import { generateWhatsAppUrl, sendEmailNotification } from '../services/notificationService'
 
 export default function ServiceDetail() {
   const { slug } = useParams()
@@ -24,6 +25,7 @@ export default function ServiceDetail() {
   })
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [submittedWaUrl, setSubmittedWaUrl] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
 
   if (!service) {
@@ -64,6 +66,27 @@ export default function ServiceDetail() {
 
       const { error } = await supabase.from('enquiries').insert([payload])
       if (error) throw error
+
+      // Generate WhatsApp URL
+      const waUrl = generateWhatsAppUrl({
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        eventType: service.title,
+        eventDate: formData.eventDate,
+        message: formData.message
+      })
+      setSubmittedWaUrl(waUrl)
+
+      // Fire email notification in background
+      sendEmailNotification({
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        eventType: service.title,
+        eventDate: formData.eventDate,
+        message: formData.message
+      }).catch(err => console.error('Email notify background error:', err))
 
       setSubmitted(true)
       setFormData({ name: '', phone: '', email: '', eventDate: '', message: '' })
@@ -295,10 +318,20 @@ export default function ServiceDetail() {
               {submitted ? (
                 <div className="bg-gold/15 border border-gold p-6 rounded-sm text-center space-y-3">
                   <CheckCircle2 className="text-gold mx-auto" size={32} />
-                  <h4 className="text-white text-sm font-bold font-playfair uppercase">Inquiry Received</h4>
+                  <h4 className="text-white text-sm font-bold font-playfair uppercase">Inquiry Logged</h4>
                   <p className="text-luxury-muted text-xs">
-                    Thank you! Our senior event planner will reach out to you within 2 hours.
+                    Thank you! Our senior event planner will reach out to you within 2 hours. Email notification has been dispatched to our team.
                   </p>
+                  {submittedWaUrl && (
+                    <a
+                      href={submittedWaUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-green-500 hover:from-emerald-500 hover:to-green-400 text-white font-bold text-xs px-4 py-2 rounded-sm shadow-md uppercase tracking-wider transition-all mt-2"
+                    >
+                      <MessageSquare size={14} /> Send Copy on WhatsApp <ExternalLink size={12} />
+                    </a>
+                  )}
                   <button
                     onClick={() => setSubmitted(false)}
                     className="text-[10px] text-gold uppercase tracking-widest underline font-semibold pt-2 block mx-auto"

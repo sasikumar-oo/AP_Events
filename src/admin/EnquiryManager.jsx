@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Search, Mail, Phone, Calendar, CheckSquare, Square, Trash2, Check, AlertCircle } from 'lucide-react'
+import { Search, Mail, Phone, Calendar, CheckSquare, Square, Trash2, Check, AlertCircle, MessageSquare } from 'lucide-react'
 import { supabase } from '../supabaseClient'
 
 export default function EnquiryManager() {
@@ -231,27 +231,36 @@ export default function EnquiryManager() {
                   )}
                 </div>
 
-                {/* Direct action targets */}
-                <div className="bg-luxury-black/45 border border-gold/10 p-4 rounded-sm flex flex-col justify-center space-y-3 font-semibold uppercase tracking-wider text-[10px]">
-                  <span className="text-[9px] uppercase tracking-wider text-luxury-muted block mb-1">Connect Directly</span>
-                  
-                  <a
-                    href={`tel:${enq.phone}`}
-                    className="w-full border border-gold/30 hover:border-gold text-gold hover:text-white py-2.5 rounded-sm flex items-center justify-center gap-1.5 transition-colors"
-                  >
-                    <Phone size={12} /> Call {enq.phone}
-                  </a>
+                  {/* Direct action targets */}
+                  <div className="bg-luxury-black/45 border border-gold/10 p-4 rounded-sm flex flex-col justify-center space-y-2 font-semibold uppercase tracking-wider text-[10px]">
+                    <span className="text-[9px] uppercase tracking-wider text-luxury-muted block mb-1">Instant Lead Connect</span>
+                    
+                    <a
+                      href={`tel:${enq.phone}`}
+                      className="w-full border border-gold/30 hover:border-gold text-gold hover:text-white py-2 rounded-sm flex items-center justify-center gap-1.5 transition-colors"
+                    >
+                      <Phone size={12} /> Call {enq.phone}
+                    </a>
 
-                  <a
-                    href={`https://wa.me/${enq.phone.replace(/\D/g, '')}?text=Hello%20${encodeURIComponent(enq.name)},%20this%20is%20AP%20Events%20regarding%20your%20inquiry...`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full bg-gold text-luxury-black hover:bg-gold-light py-2.5 rounded-sm flex items-center justify-center gap-1.5 transition-colors text-center"
-                  >
-                    <Mail size={12} /> WhatsApp Chat
-                  </a>
+                    <a
+                      href={`https://wa.me/${enq.phone.replace(/\D/g, '').length === 10 ? '91' + enq.phone.replace(/\D/g, '') : enq.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${enq.name}, thank you for reaching out to AP Events regarding your ${enq.event_type} inquiry! How can we assist you with your event planning?`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full bg-gradient-to-r from-emerald-600 to-green-500 hover:from-emerald-500 hover:to-green-400 text-white py-2 rounded-sm flex items-center justify-center gap-1.5 transition-colors text-center shadow-sm"
+                    >
+                      <MessageSquare size={12} /> Reply on WhatsApp
+                    </a>
+
+                    {enq.email && (
+                      <a
+                        href={`mailto:${enq.email}?subject=${encodeURIComponent(`AP Events - ${enq.event_type} Inquiry Response`)}&body=${encodeURIComponent(`Dear ${enq.name},\n\nThank you for reaching out to AP Events regarding your ${enq.event_type}!\n\nWe have logged your inquiry and would love to discuss custom packages, pricing, and availability with you.\n\nBest regards,\nAP Events Team`)}`}
+                        className="w-full border border-blue-500/40 hover:border-blue-400 text-blue-400 hover:bg-blue-500/10 py-2 rounded-sm flex items-center justify-center gap-1.5 transition-colors text-center"
+                      >
+                        <Mail size={12} /> Send Email
+                      </a>
+                    )}
+                  </div>
                 </div>
-              </div>
 
             </div>
           ))}
