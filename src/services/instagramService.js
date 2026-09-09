@@ -9,7 +9,7 @@ export const DEFAULT_INSTAGRAM_PROFILE = {
   name: 'AP Events Rhythm of Kerala & Luxury Decor',
   verified: true,
   avatar: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=300',
-  bio: '✨ Premier Event Architecture & Rhythm of Kerala\n🥁 Chenda Melam | Royal Weddings | Stage & Sound | Balloon Decor\n📞 Booking: 9150226356 / 9080717153',
+  bio: '✨ Premier Event Architecture & Rhythm of Kerala\n🥁 Chenda Melam | Royal Weddings | Stage & Sound | Balloon Decor\n📞 Booking: 9150226356',
   followers: '48.2K',
   following: '312',
   postsCount: '284',

@@ -23,6 +23,7 @@ export default function ServicesManager() {
   const [heroImage, setHeroImage] = useState('')
   const [galleryImages, setGalleryImages] = useState([''])
   const [features, setFeatures] = useState([''])
+  const [faqs, setFaqs] = useState([{ q: '', a: '' }])
 
   useEffect(() => {
     fetchServices()
@@ -78,6 +79,7 @@ export default function ServicesManager() {
     setHeroImage('')
     setGalleryImages([''])
     setFeatures(['VIP Hospitality', 'Stage Architecture'])
+    setFaqs([{ q: '', a: '' }])
     setError('')
     setModalOpen(true)
   }
@@ -92,6 +94,7 @@ export default function ServicesManager() {
     setHeroImage(svc.heroImage || svc.img || '')
     setGalleryImages(svc.gallery && svc.gallery.length > 0 ? svc.gallery : [svc.heroImage || svc.img || ''])
     setFeatures(svc.features && svc.features.length > 0 ? svc.features : ['Signature Service'])
+    setFaqs(svc.faqs && svc.faqs.length > 0 ? svc.faqs : [{ q: '', a: '' }])
     setError('')
     setModalOpen(true)
   }
@@ -107,6 +110,7 @@ export default function ServicesManager() {
     const cleanHeroImage = parseImageUrl(heroImage) || 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1600'
     const cleanGallery = galleryImages.map(img => parseImageUrl(img)).filter(img => img.length > 0)
     const cleanFeatures = features.map(f => f.trim()).filter(f => f.length > 0)
+    const cleanFaqs = faqs.map(f => ({ q: f.q.trim(), a: f.a.trim() })).filter(f => f.q.length > 0 && f.a.length > 0)
 
     const slug = editingService?.slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
     const serviceId = editingService?.id || slug
@@ -126,9 +130,7 @@ export default function ServicesManager() {
         { step: '01', title: 'Consultation & Concept', desc: 'Mapping client requirements and budget.' },
         { step: '02', title: 'Flawless Execution', desc: 'Professional on-site coordination and VIP service.' }
       ],
-      faqs: editingService?.faqs || [
-        { q: 'How early should we book this service package?', a: 'We recommend booking 2 to 6 months in advance for peak wedding and festival seasons.' }
-      ]
+      faqs: cleanFaqs.length > 0 ? cleanFaqs : (editingService?.faqs || [])
     }
 
     let updatedList = []
@@ -383,6 +385,61 @@ export default function ServicesManager() {
                           <Trash2 size={14} />
                         </button>
                       )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Frequently Asked Questions (FAQs) */}
+              <div>
+                <div className="flex justify-between items-center mb-1.5">
+                  <label className={labelClasses}>Frequently Asked Questions (FAQs)</label>
+                  <button
+                    type="button"
+                    onClick={() => setFaqs([...faqs, { q: '', a: '' }])}
+                    className="text-[10px] text-gold font-bold uppercase tracking-wider flex items-center gap-1 hover:underline"
+                  >
+                    <Plus size={12} /> Add FAQ
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  {faqs.map((faqItem, idx) => (
+                    <div key={idx} className="p-3 bg-luxury-black/60 border border-gold/15 rounded-md space-y-2 relative">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[10px] uppercase font-bold text-gold/80">FAQ #{idx + 1}</span>
+                        {faqs.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => setFaqs(faqs.filter((_, i) => i !== idx))}
+                            className="text-red-400 hover:text-red-300 text-xs flex items-center gap-1"
+                          >
+                            <Trash2 size={12} /> Remove
+                          </button>
+                        )}
+                      </div>
+                      <input
+                        type="text"
+                        value={faqItem.q}
+                        onChange={(e) => {
+                          const copy = [...faqs]
+                          copy[idx] = { ...copy[idx], q: e.target.value }
+                          setFaqs(copy)
+                        }}
+                        placeholder="Question (e.g. Do you supply traditional Kerala art performance troops?)"
+                        className={inputClasses}
+                      />
+                      <textarea
+                        rows={2}
+                        value={faqItem.a}
+                        onChange={(e) => {
+                          const copy = [...faqs]
+                          copy[idx] = { ...copy[idx], a: e.target.value }
+                          setFaqs(copy)
+                        }}
+                        placeholder="Answer (e.g. Yes! We organize veteran Kathakali, Theyyam, Mohiniyattam...)"
+                        className={inputClasses}
+                      />
                     </div>
                   ))}
                 </div>

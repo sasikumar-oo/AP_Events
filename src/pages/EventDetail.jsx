@@ -89,6 +89,16 @@ export default function EventDetail() {
     }
   }
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apevents.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Events", "item": "https://apevents.com/events" },
+      { "@type": "ListItem", "position": 3, "name": event.title, "item": `https://apevents.com/events/${slug}` }
+    ]
+  }
+
   return (
     <>
       <Helmet>
@@ -98,9 +108,12 @@ export default function EventDetail() {
         <meta property="og:description" content={event.description.substring(0, 155)} />
         <meta property="og:image" content={event.image_url} />
         <meta property="og:type" content="article" />
-        {/* Inject Structured Data */}
+        <link rel="canonical" href={`https://apevents.com/events/${slug}`} />
         <script type="application/ld+json">
           {JSON.stringify(jsonLdData)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbJsonLd)}
         </script>
       </Helmet>
 

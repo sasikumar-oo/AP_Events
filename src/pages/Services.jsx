@@ -179,11 +179,29 @@ export default function Services() {
     ? servicesList
     : servicesList.filter(s => s.category === activeTab)
 
+  const servicesJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "AP Events Signature Services",
+    "itemListElement": servicesList.map((svc, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "item": {
+        "@type": "Service",
+        "name": svc.title,
+        "description": svc.desc,
+        "url": `https://apevents.com/services/${svc.slug}`
+      }
+    }))
+  }
+
   return (
     <>
       <Helmet>
         <title>Signature Services | AP Events Luxury Catalogue</title>
         <meta name="description" content="Explore our comprehensive suite of 14 luxury services, from royal weddings and corporate galas to traditional Chenda Melam and premium bouncers." />
+        <link rel="canonical" href="https://apevents.com/services" />
+        <script type="application/ld+json">{JSON.stringify(servicesJsonLd)}</script>
       </Helmet>
 
       {/* Header Banner */}
@@ -204,31 +222,33 @@ export default function Services() {
       </section>
 
       {/* Glassmorphism Filter Tabs Bar */}
-      <section className="py-10 bg-luxury-bg border-b border-gold/10">
-        <div className="max-w-7xl mx-auto px-6 flex justify-center">
-          <div className="inline-flex flex-wrap justify-center items-center gap-2 bg-luxury-black/80 backdrop-blur-xl p-2 rounded-full border border-gold/20 shadow-2xl max-w-full">
-            {serviceCategories.map((cat) => {
-              const count = cat === 'All' ? servicesList.length : servicesList.filter(s => s.category === cat).length
-              const isActive = activeTab === cat
-              return (
-                <button
-                  key={cat}
-                  onClick={() => setActiveTab(cat)}
-                  className={`px-5 py-2.5 text-xs uppercase tracking-widest font-bold rounded-full transition-all duration-300 flex items-center gap-2.5 ${
-                    isActive
-                      ? 'bg-gold-gradient text-luxury-black shadow-gold-glow scale-105'
-                      : 'text-white/80 hover:text-gold hover:bg-gold/10'
-                  }`}
-                >
-                  <span>{cat}</span>
-                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full transition-colors ${
-                    isActive ? 'bg-luxury-black/20 text-luxury-black' : 'bg-gold/15 text-gold'
-                  }`}>
-                    {count}
-                  </span>
-                </button>
-              )
-            })}
+      <section className="py-6 sm:py-10 bg-luxury-bg border-b border-gold/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex justify-start sm:justify-center overflow-x-auto no-scrollbar scroll-smooth py-1 px-1">
+            <div className="inline-flex items-center gap-1.5 sm:gap-2.5 bg-luxury-black/80 backdrop-blur-xl p-1.5 sm:p-2 rounded-full border border-gold/20 shadow-2xl shrink-0">
+              {serviceCategories.map((cat) => {
+                const count = cat === 'All' ? servicesList.length : servicesList.filter(s => s.category === cat).length
+                const isActive = activeTab === cat
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveTab(cat)}
+                    className={`px-3.5 sm:px-5 py-2 sm:py-2.5 text-[11px] sm:text-xs uppercase tracking-widest font-bold rounded-full transition-all duration-300 flex items-center gap-2 shrink-0 whitespace-nowrap ${
+                      isActive
+                        ? 'bg-gold-gradient text-luxury-black shadow-gold-glow scale-105'
+                        : 'text-white/80 hover:text-gold hover:bg-gold/10'
+                    }`}
+                  >
+                    <span>{cat}</span>
+                    <span className={`text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full transition-colors ${
+                      isActive ? 'bg-luxury-black/20 text-luxury-black' : 'bg-gold/15 text-gold'
+                    }`}>
+                      {count}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
           </div>
         </div>
       </section>

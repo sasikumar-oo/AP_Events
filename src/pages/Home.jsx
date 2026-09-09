@@ -86,6 +86,44 @@ export default function Home() {
     }
   }
 
+  const homeJsonLd = {
+    "@context": "https://schema.org",
+    "@type": ["EventPlanningService", "LocalBusiness"],
+    "name": "AP Events",
+    "image": hero.bg_image || "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1200",
+    "@id": "https://apevents.com/#organization",
+    "url": "https://apevents.com",
+    "telephone": "+919150226356",
+    "email": "info@apevents.com",
+    "priceRange": "$$$",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Ganapathy Nagar, Vanagaram",
+      "addressLocality": "Chennai",
+      "addressRegion": "Tamil Nadu",
+      "postalCode": "600095",
+      "addressCountry": "IN"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 13.0645,
+      "longitude": 80.1582
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "opens": "09:00",
+      "closes": "21:00"
+    },
+    "areaServed": [
+      { "@type": "State", "name": "Kerala" },
+      { "@type": "State", "name": "Tamil Nadu" },
+      { "@type": "Country", "name": "India" }
+    ],
+    "sameAs": ["https://www.instagram.com/ap_events_management/"],
+    "description": "AP Events is a premier luxury event management and production company specializing in royal weddings, traditional Chenda Melam percussion, corporate summits, stage decor, and VIP operations."
+  }
+
   return (
     <>
       <Helmet>
@@ -94,10 +132,12 @@ export default function Home() {
         <meta property="og:title" content="AP Events | Premium Luxury Event Management" />
         <meta property="og:description" content="Welcome to AP Events. We plan premium royal weddings, corporate summits, traditional temple festivals, and elite parties." />
         <meta property="og:image" content={hero.bg_image} />
+        <link rel="canonical" href="https://apevents.com/" />
+        <script type="application/ld+json">{JSON.stringify(homeJsonLd)}</script>
       </Helmet>
 
       {/* 1. HERO SECTION */}
-      <section className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-black">
+      <section className="relative min-h-[100dvh] h-screen w-full flex items-center justify-center overflow-hidden bg-black">
         {/* Autoplay Luxury Background Hero Video */}
         <video
           autoPlay

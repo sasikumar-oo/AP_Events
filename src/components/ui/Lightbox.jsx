@@ -143,6 +143,7 @@ export default function Lightbox({ media, onClose, onPrev, onNext }) {
             src={media_url}
             controls
             autoPlay
+            playsInline
             className="absolute inset-0 w-full h-full object-contain bg-black"
           />
         </div>

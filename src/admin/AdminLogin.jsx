@@ -13,6 +13,7 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [lockoutTime, setLockoutTime] = useState(0)
 
   const redirectPath = location.state?.from?.pathname || '/admin/dashboard'
 
@@ -23,17 +24,58 @@ export default function AdminLogin() {
     }
   }, [user, navigate, redirectPath])
 
+  // Check login attempt throttling
+  useEffect(() => {
+    const attempts = JSON.parse(localStorage.getItem('admin_login_attempts') || '{"count": 0, "lockoutUntil": 0}')
+    if (attempts.lockoutUntil && attempts.lockoutUntil > Date.now()) {
+      const remainingSecs = Math.ceil((attempts.lockoutUntil - Date.now()) / 1000)
+      setLockoutTime(remainingSecs)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (lockoutTime <= 0) return
+    const timer = setInterval(() => {
+      setLockoutTime((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer)
+          localStorage.removeItem('admin_login_attempts')
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [lockoutTime])
+
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (lockoutTime > 0) {
+      setError(`Too many failed attempts. Try again in ${lockoutTime} seconds.`)
+      return
+    }
+
     setError('')
     setSubmitting(true)
 
+    const attemptsData = JSON.parse(localStorage.getItem('admin_login_attempts') || '{"count": 0, "lockoutUntil": 0}')
+
     try {
-      await login(email, password)
+      await login(email.trim(), password)
+      localStorage.removeItem('admin_login_attempts')
       navigate(redirectPath, { replace: true })
     } catch (err) {
-      console.error('Login submission failed:', err)
-      setError(err.message || 'Invalid email or password. Access denied.')
+      console.warn('Login failure logged.')
+      const newCount = (attemptsData.count || 0) + 1
+      if (newCount >= 5) {
+        const lockoutUntil = Date.now() + 15 * 60 * 1000 // 15 minutes lockout
+        localStorage.setItem('admin_login_attempts', JSON.stringify({ count: newCount, lockoutUntil }))
+        setLockoutTime(900)
+        setError('Too many failed authorization attempts. Locked out for 15 minutes.')
+      } else {
+        localStorage.setItem('admin_login_attempts', JSON.stringify({ count: newCount, lockoutUntil: 0 }))
+        setError(`Invalid credentials. Attempt ${newCount} of 5 before temporary lockout.`)
+      }
     } finally {
       setSubmitting(false)
     }

@@ -108,11 +108,21 @@ export default function Gallery() {
     }
   }
 
+  const galleryJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ImageGallery",
+    "name": "AP Events Visual Gallery & Reels Showcase",
+    "description": "Explore AP Events cinematic highlights, wedding videos, stage shows, and latest Instagram posts.",
+    "url": "https://apevents.com/gallery"
+  }
+
   return (
     <>
       <Helmet>
-        <title>Event Highlights & Media Gallery | AP Events</title>
+        <title>Visual Gallery & Media | AP Events Production Portfolio</title>
         <meta name="description" content="Explore AP Events cinematic highlights, wedding videos, stage shows, and latest Instagram posts from @ap_events_management." />
+        <link rel="canonical" href="https://apevents.com/gallery" />
+        <script type="application/ld+json">{JSON.stringify(galleryJsonLd)}</script>
       </Helmet>
 
       <div className="min-h-screen bg-luxury-bg text-white font-poppins pt-32 pb-24 space-y-24">

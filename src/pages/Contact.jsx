@@ -54,14 +54,40 @@ export default function Contact() {
     fetchContactDetails()
   }, [searchParams])
 
+  const [honeypot, setHoneypot] = useState('')
+  const [lastSubmitTime, setLastSubmitTime] = useState(0)
+
+  const sanitizeInput = (str) => {
+    if (!str || typeof str !== 'string') return ''
+    return str.replace(/<[^>]*>?/gm, '').trim()
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setSuccess(false)
 
-    // Validation
-    if (!name.trim()) return setError('Please specify your name.')
-    if (!phone.trim()) return setError('Please specify your contact phone number.')
+    // Honeypot spam bot detection
+    if (honeypot.trim().length > 0) {
+      console.warn('Spam bot submission blocked via honeypot.')
+      setSuccess(true) // Silent pass for bots
+      return
+    }
+
+    // Client-side rate limiting (prevent multiple submissions within 30 seconds)
+    const now = Date.now()
+    if (now - lastSubmitTime < 30000) {
+      setError('Please wait 30 seconds before submitting another inquiry.')
+      return
+    }
+
+    // Input Validation & Sanitization
+    const cleanName = sanitizeInput(name)
+    const cleanPhone = sanitizeInput(phone)
+    const cleanMessage = sanitizeInput(message)
+
+    if (!cleanName) return setError('Please specify your valid name.')
+    if (!cleanPhone || cleanPhone.length < 7) return setError('Please specify a valid contact phone number.')
 
     setSubmitting(true)
 
@@ -71,15 +97,16 @@ export default function Contact() {
         .from('enquiries')
         .insert([
           {
-            name: name.trim(),
-            phone: phone.trim(),
+            name: cleanName,
+            phone: cleanPhone,
             event_type: eventType,
             event_date: eventDate || null,
-            message: message.trim() || null
+            message: cleanMessage || null
           }
         ])
 
       if (dbErr) throw dbErr
+      setLastSubmitTime(now)
 
       // 2. Automatically dispatch Email & WhatsApp notifications to Admin
       const { waUrl } = await notifyAdminOnInquiry({
@@ -108,11 +135,34 @@ export default function Contact() {
 
   const inputClasses = "w-full bg-luxury-black/60 border border-gold/25 rounded-sm px-4 py-3 text-sm text-white focus:outline-none focus:border-gold focus:shadow-gold-glow transition-all duration-300 font-poppins placeholder:text-luxury-muted/70"
 
+  const contactJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "name": "Contact AP Events",
+    "url": "https://apevents.com/contact",
+    "mainEntity": {
+      "@type": "LocalBusiness",
+      "name": "AP Events",
+      "telephone": contactDetails.phone || "+919150226356",
+      "email": contactDetails.email || "info@apevents.com",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Ganapathy Nagar, Vanagaram",
+        "addressLocality": "Chennai",
+        "addressRegion": "Tamil Nadu",
+        "postalCode": "600095",
+        "addressCountry": "IN"
+      }
+    }
+  }
+
   return (
     <>
       <Helmet>
         <title>Contact & Inquiries | AP Events Luxury Planner</title>
         <meta name="description" content="Get in touch with our elite events consultation desk. Fill out our booking enquiry form to receive a custom luxury project proposal." />
+        <link rel="canonical" href="https://apevents.com/contact" />
+        <script type="application/ld+json">{JSON.stringify(contactJsonLd)}</script>
       </Helmet>
 
       {/* Header Banner */}
@@ -141,6 +191,17 @@ export default function Contact() {
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+
+              {/* Invisible Spam Honeypot Field */}
+              <input
+                type="text"
+                name="website_url_hp"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+                className="hidden opacity-0 absolute -z-50 pointer-events-none"
+              />
 
               {/* Error and Success Banners */}
               {error && (

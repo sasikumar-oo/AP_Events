@@ -116,7 +116,7 @@ export default function Navbar() {
 
       {/* Mobile Drawer Overlay */}
       <div
-        className={`fixed inset-0 top-[64px] sm:top-[70px] w-full bg-luxury-black/95 backdrop-blur-xl border-t border-gold/15 lg:hidden transition-all duration-500 transform ${
+        className={`fixed inset-0 top-[64px] sm:top-[70px] w-full max-h-[calc(100dvh-64px)] overflow-y-auto no-scrollbar bg-luxury-black/95 backdrop-blur-xl border-t border-gold/15 lg:hidden transition-all duration-500 transform ${
           isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full pointer-events-none'
         }`}
       >

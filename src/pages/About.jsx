@@ -65,11 +65,28 @@ export default function About() {
     }
   ]
 
+  const aboutJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "name": "About AP Events",
+    "description": content.description,
+    "url": "https://apevents.com/about",
+    "mainEntity": {
+      "@type": "Organization",
+      "name": "AP Events",
+      "url": "https://apevents.com",
+      "logo": "https://apevents.com/logo.png",
+      "sameAs": ["https://www.instagram.com/ap_events_management/"]
+    }
+  }
+
   return (
     <>
       <Helmet>
         <title>About Us | AP Events Luxury Planners</title>
         <meta name="description" content="Discover the philosophy and executive team behind AP Events. Learn about our vision to define premium event productions with gold standards of execution." />
+        <link rel="canonical" href="https://apevents.com/about" />
+        <script type="application/ld+json">{JSON.stringify(aboutJsonLd)}</script>
       </Helmet>
 
       {/* Header Banner */}

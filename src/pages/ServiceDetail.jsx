@@ -149,6 +149,29 @@ export default function ServiceDetail() {
     "serviceType": service.category
   }
 
+  const faqJsonLd = service.faqs && service.faqs.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": service.faqs.map(faq => ({
+      "@type": "Question",
+      "name": faq.q,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.a
+      }
+    }))
+  } : null
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apevents.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Services", "item": "https://apevents.com/services" },
+      { "@type": "ListItem", "position": 3, "name": service.title, "item": `https://apevents.com/services/${slug}` }
+    ]
+  }
+
   return (
     <>
       <Helmet>
@@ -157,7 +180,10 @@ export default function ServiceDetail() {
         <meta property="og:title" content={`${service.title} | AP Events Luxury Services`} />
         <meta property="og:description" content={service.shortDesc} />
         <meta property="og:image" content={service.heroImage} />
+        <link rel="canonical" href={`https://apevents.com/services/${slug}`} />
         <script type="application/ld+json">{JSON.stringify(jsonLdData)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
+        {faqJsonLd && <script type="application/ld+json">{JSON.stringify(faqJsonLd)}</script>}
       </Helmet>
 
       {/* 1. HERO HEADER */}
@@ -463,7 +489,7 @@ export default function ServiceDetail() {
               </p>
               <div className="space-y-2 pt-1 text-xs text-white">
                 <a href="tel:+919150226356" className="flex items-center gap-3 hover:text-gold transition-colors">
-                  <Phone size={14} className="text-gold" /> +91 91502 26356 / 90807 17153
+                  <Phone size={14} className="text-gold" /> +91 91502 26356
                 </a>
                 <a href="mailto:info@apevents.com" className="flex items-center gap-3 hover:text-gold transition-colors">
                   <Mail size={14} className="text-gold" /> info@apevents.com

@@ -37,11 +37,29 @@ export default function Events() {
     ? events
     : events.filter(e => e.category === activeCategory)
 
+  const eventsJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "AP Events Executed Projects Registry",
+    "itemListElement": events.map((evt, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "item": {
+        "@type": "Event",
+        "name": evt.title,
+        "description": evt.shortDesc || evt.fullDesc || evt.title,
+        "url": `https://apevents.com/events/${evt.slug || evt.id}`
+      }
+    }))
+  }
+
   return (
     <>
       <Helmet>
         <title>Events Registry | AP Events Luxury Logs</title>
         <meta name="description" content="Browse our list of high-end events including royal weddings, corporate galas, and VIP private parties executed by AP Events." />
+        <link rel="canonical" href="https://apevents.com/events" />
+        <script type="application/ld+json">{JSON.stringify(eventsJsonLd)}</script>
       </Helmet>
 
       {/* Header Banner */}

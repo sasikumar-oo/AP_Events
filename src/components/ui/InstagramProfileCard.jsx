@@ -5,7 +5,7 @@ export default function InstagramProfileCard({ profile }) {
   const handle = profile?.handle || profile?.username || 'ap_events_management'
   const profileUrl = profile?.profileUrl || `https://www.instagram.com/${handle}/`
   const avatar = profile?.avatar || profile?.profile_picture_url || 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=300'
-  const bio = profile?.bio || profile?.biography || '✨ Premier Event Architecture & Rhythm of Kerala\n🥁 Chenda Melam | Royal Weddings | Stage & Sound | Balloon Decor\n📞 Booking: 9150226356 / 9080717153'
+  const bio = profile?.bio || profile?.biography || '✨ Premier Event Architecture & Rhythm of Kerala\n🥁 Chenda Melam | Royal Weddings | Stage & Sound | Balloon Decor\n📞 Booking: 9150226356'
   const followers = profile?.followers || profile?.followers_count || '48.2K'
   const following = profile?.following || profile?.follows_count || '312'
   const postsCount = profile?.postsCount || profile?.media_count || '284'

@@ -3,12 +3,40 @@
 @tailwind utilities;
 
 @layer base {
+  html, body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
   body {
-    @apply bg-luxury-bg text-white font-poppins selection:bg-gold selection:text-luxury-black overflow-x-hidden;
+    @apply bg-luxury-bg text-white font-poppins selection:bg-gold selection:text-luxury-black;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-playfair tracking-wide;
+  }
+
+  /* Touch Momentum Scrolling for iOS Safari & Android */
+  .overflow-x-auto, .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Prevent involuntary mobile viewport zoom on form input focus on iOS Safari */
+  @media screen and (max-width: 768px) {
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"],
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
   }
 
   /* Custom Premium Scrollbar */
@@ -33,6 +61,15 @@
 }
 
 @layer utilities {
+  /* Hide scrollbars for clean horizontal tab sliders */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
   /* Premium Gold Text Gradient */
   .text-gold-gradient {
     background: linear-gradient(135deg, #B8860B 0%, #D4AF37 50%, #F3E5AB 100%);
