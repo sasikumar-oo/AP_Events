@@ -20,7 +20,7 @@ export default function Footer() {
           .from('site_settings')
           .select('value')
           .eq('key', 'contact_info')
-          .single()
+          .maybeSingle()
 
         if (data && data.value) {
           setContact(data.value)

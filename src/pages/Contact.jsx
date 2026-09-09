@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { Mail, Phone, MapPin, Send, CheckCircle2, AlertCircle, MessageSquare, ExternalLink } from 'lucide-react'
 import { supabase } from '../supabaseClient'
-import { generateWhatsAppUrl, sendEmailNotification } from '../services/notificationService'
+import { notifyAdminOnInquiry, generateAdminWhatsAppUrl } from '../services/notificationService'
 
 export default function Contact() {
   const [searchParams] = useSearchParams()
@@ -43,7 +43,7 @@ export default function Contact() {
           .from('site_settings')
           .select('value')
           .eq('key', 'contact_info')
-          .single()
+          .maybeSingle()
         if (data && data.value) {
           setContact(data.value)
         }
@@ -66,7 +66,7 @@ export default function Contact() {
     setSubmitting(true)
 
     try {
-      // 1. Save to Supabase DB
+      // 1. Save inquiry record into Supabase database
       const { error: dbErr } = await supabase
         .from('enquiries')
         .insert([
@@ -81,26 +81,18 @@ export default function Contact() {
 
       if (dbErr) throw dbErr
 
-      // 2. Generate WhatsApp URL
-      const waUrl = generateWhatsAppUrl({
+      // 2. Automatically dispatch Email & WhatsApp notifications to Admin
+      const { waUrl } = await notifyAdminOnInquiry({
         name: name.trim(),
         phone: phone.trim(),
         email: '',
         eventType,
         eventDate,
-        message: message.trim()
+        message: message.trim(),
+        autoOpenWhatsApp: true
       })
+
       setLastSubmittedWhatsAppUrl(waUrl)
-
-      // 3. Send Email Notification in background
-      sendEmailNotification({
-        name: name.trim(),
-        phone: phone.trim(),
-        eventType,
-        eventDate,
-        message: message.trim()
-      }).catch(err => console.error('Email notify background error:', err))
-
       setSuccess(true)
       setName('')
       setPhone('')

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Calendar, Image, Star, Mail, ArrowRight, ShieldAlert, Clock } from 'lucide-react'
+import { Calendar, Image, Star, Mail, ArrowRight, ShieldAlert, Clock, Briefcase } from 'lucide-react'
 import { supabase } from '../supabaseClient'
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
     events: 0,
+    services: 0,
     gallery: 0,
     testimonials: 0,
     enquiries: 0
@@ -23,16 +24,24 @@ export default function AdminDashboard() {
           { count: eventsCount },
           { count: galleryCount },
           { count: testimonialsCount },
-          { count: enquiriesCount }
+          { count: enquiriesCount },
+          { data: customServicesData }
         ] = await Promise.all([
           supabase.from('events').select('*', { count: 'exact', head: true }),
           supabase.from('gallery').select('*', { count: 'exact', head: true }),
           supabase.from('testimonials').select('*', { count: 'exact', head: true }),
-          supabase.from('enquiries').select('*', { count: 'exact', head: true })
+          supabase.from('enquiries').select('*', { count: 'exact', head: true }),
+          supabase.from('site_settings').select('value').eq('key', 'custom_services').maybeSingle()
         ])
+
+        let servicesCount = 6
+        if (customServicesData && customServicesData.value && Array.isArray(customServicesData.value)) {
+          servicesCount = customServicesData.value.length
+        }
 
         setStats({
           events: eventsCount || 0,
+          services: servicesCount,
           gallery: galleryCount || 0,
           testimonials: testimonialsCount || 0,
           enquiries: enquiriesCount || 0
@@ -58,6 +67,7 @@ export default function AdminDashboard() {
 
   const statCards = [
     { name: 'Total Events', count: stats.events, icon: <Calendar size={22} />, path: '/admin/dashboard/events', color: 'border-gold/25 text-gold' },
+    { name: 'Services & Packages', count: stats.services, icon: <Briefcase size={22} />, path: '/admin/dashboard/services', color: 'border-gold/25 text-gold' },
     { name: 'Gallery Items', count: stats.gallery, icon: <Image size={22} />, path: '/admin/dashboard/gallery', color: 'border-gold/25 text-gold' },
     { name: 'Testimonials', count: stats.testimonials, icon: <Star size={22} />, path: '/admin/dashboard/content', color: 'border-gold/25 text-gold' },
     { name: 'Client Enquiries', count: stats.enquiries, icon: <Mail size={22} />, path: '/admin/dashboard/enquiries', color: 'border-gold/25 text-gold' }
@@ -85,7 +95,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stats Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         {statCards.map((card) => (
           <Link
             key={card.name}

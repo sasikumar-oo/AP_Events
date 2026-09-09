@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { 
   LayoutDashboard, CalendarRange, Image, Settings, 
-  MailOpen, LogOut, Menu, X, ShieldAlert 
+  MailOpen, LogOut, Menu, X, ShieldAlert, Briefcase 
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
@@ -23,6 +23,7 @@ export default function AdminLayout() {
 
   const menuItems = [
     { name: 'Dashboard Stats', path: '/admin/dashboard', icon: <LayoutDashboard size={18} /> },
+    { name: 'Services Editor', path: '/admin/dashboard/services', icon: <Briefcase size={18} /> },
     { name: 'Events Manager', path: '/admin/dashboard/events', icon: <CalendarRange size={18} /> },
     { name: 'Gallery Portfolio', path: '/admin/dashboard/gallery', icon: <Image size={18} /> },
     { name: 'Page Content Settings', path: '/admin/dashboard/content', icon: <Settings size={18} /> },

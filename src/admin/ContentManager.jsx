@@ -424,7 +424,7 @@ export default function ContentManager() {
                   type="text"
                   value={contact.whatsapp || ''}
                   onChange={(e) => setContact({ ...contact, whatsapp: e.target.value })}
-                  placeholder="e.g. 919876543210"
+                  placeholder="e.g. 919150226356"
                   className={inputClasses}
                 />
               </div>

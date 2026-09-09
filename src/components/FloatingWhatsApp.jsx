@@ -13,7 +13,7 @@ export default function FloatingWhatsApp() {
           .from('site_settings')
           .select('value')
           .eq('key', 'contact_info')
-          .single()
+          .maybeSingle()
 
         if (data && data.value && data.value.whatsapp) {
           // Strip non-numbers from whatsapp config

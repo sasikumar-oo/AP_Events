@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
@@ -8,12 +8,46 @@ import {
 } from 'lucide-react'
 import { getServiceBySlug, servicesData } from '../data/servicesData'
 import { supabase } from '../supabaseClient'
-import { generateWhatsAppUrl, sendEmailNotification } from '../services/notificationService'
+import { notifyAdminOnInquiry } from '../services/notificationService'
+import { parseImageUrl } from '../services/instagramService'
 
 export default function ServiceDetail() {
   const { slug } = useParams()
   const navigate = useNavigate()
-  const service = getServiceBySlug(slug)
+  const [service, setService] = useState(() => getServiceBySlug(slug))
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const fetchCustomService = async () => {
+      try {
+        const { data } = await supabase.from('site_settings').select('value').eq('key', 'custom_services').maybeSingle()
+        if (data && data.value && Array.isArray(data.value)) {
+          const found = data.value.find(s => (s.slug && s.slug.toLowerCase() === slug.toLowerCase()) || (s.id && s.id.toString().toLowerCase() === slug.toLowerCase()))
+          if (found) {
+            setService({
+              title: found.title,
+              category: found.category || 'Signature Events',
+              shortDesc: found.shortDesc || found.fullDesc || '',
+              fullDesc: found.fullDesc || found.shortDesc || '',
+              heroImage: parseImageUrl(found.heroImage || found.img),
+              gallery: (found.gallery && found.gallery.length > 0 ? found.gallery : [found.heroImage || found.img]).map(g => parseImageUrl(g)),
+              features: found.features || ['Luxury Event Architecture', 'VIP Hospitality'],
+              process: found.process || [
+                { step: '01', title: 'Consultation & Concept', desc: 'Mapping client requirements and budget.' },
+                { step: '02', title: 'Flawless Execution', desc: 'Professional on-site coordination and VIP service.' }
+              ],
+              faqs: found.faqs || [
+                { q: 'How early should we book this service package?', a: 'We recommend booking 2 to 6 months in advance for peak wedding and festival seasons.' }
+              ]
+            })
+          }
+        }
+      } catch (err) {
+        console.log('Using default static service data.')
+      }
+    }
+    fetchCustomService()
+  }, [slug])
 
   // Quick inquiry state
   const [formData, setFormData] = useState({
@@ -67,26 +101,17 @@ export default function ServiceDetail() {
       const { error } = await supabase.from('enquiries').insert([payload])
       if (error) throw error
 
-      // Generate WhatsApp URL
-      const waUrl = generateWhatsAppUrl({
+      // Automatically dispatch Email & WhatsApp notifications to Admin
+      const { waUrl } = await notifyAdminOnInquiry({
         name: formData.name,
         phone: formData.phone,
         email: formData.email,
         eventType: service.title,
         eventDate: formData.eventDate,
-        message: formData.message
+        message: formData.message,
+        autoOpenWhatsApp: true
       })
       setSubmittedWaUrl(waUrl)
-
-      // Fire email notification in background
-      sendEmailNotification({
-        name: formData.name,
-        phone: formData.phone,
-        email: formData.email,
-        eventType: service.title,
-        eventDate: formData.eventDate,
-        message: formData.message
-      }).catch(err => console.error('Email notify background error:', err))
 
       setSubmitted(true)
       setFormData({ name: '', phone: '', email: '', eventDate: '', message: '' })
@@ -183,9 +208,13 @@ export default function ServiceDetail() {
               className="relative h-[380px] sm:h-[480px] rounded-sm overflow-hidden border border-gold/20 group"
             >
               <img
-                src={service.heroImage}
+                src={parseImageUrl(service.heroImage)}
                 alt={service.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                onError={(e) => {
+                  e.target.onerror = null
+                  e.target.src = 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1600'
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-luxury-black via-transparent to-transparent opacity-80" />
 
@@ -433,8 +462,8 @@ export default function ServiceDetail() {
                 Prefer immediate assistance? Speak directly with our lead planner.
               </p>
               <div className="space-y-2 pt-1 text-xs text-white">
-                <a href="tel:+919876543210" className="flex items-center gap-3 hover:text-gold transition-colors">
-                  <Phone size={14} className="text-gold" /> +91 98765 43210
+                <a href="tel:+919150226356" className="flex items-center gap-3 hover:text-gold transition-colors">
+                  <Phone size={14} className="text-gold" /> +91 91502 26356 / 90807 17153
                 </a>
                 <a href="mailto:info@apevents.com" className="flex items-center gap-3 hover:text-gold transition-colors">
                   <Mail size={14} className="text-gold" /> info@apevents.com

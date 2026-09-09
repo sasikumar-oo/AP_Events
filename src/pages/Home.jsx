@@ -16,6 +16,7 @@ export default function Home() {
   const [events, setEvents] = useState([])
   const [testimonials, setTestimonials] = useState([])
   const [loading, setLoading] = useState(true)
+  const [whatsappNumber, setWhatsappNumber] = useState('919150226356')
 
   useEffect(() => {
     const fetchHomeData = async () => {
@@ -25,9 +26,22 @@ export default function Home() {
           .from('site_settings')
           .select('value')
           .eq('key', 'hero_banner')
-          .single()
+          .maybeSingle()
         if (heroData && heroData.value) {
           setHero(heroData.value)
+        }
+
+        // Fetch contact info for WhatsApp number
+        const { data: contactData } = await supabase
+          .from('site_settings')
+          .select('value')
+          .eq('key', 'contact_info')
+          .maybeSingle()
+        if (contactData && contactData.value && (contactData.value.whatsapp || contactData.value.phone)) {
+          const rawNum = (contactData.value.whatsapp || contactData.value.phone).replace(/\D/g, '')
+          if (rawNum) {
+            setWhatsappNumber(rawNum.length === 10 ? `91${rawNum}` : rawNum)
+          }
         }
 
         // 2. Fetch recent events (limit 3, published)
@@ -424,7 +438,7 @@ export default function Home() {
               Schedule Consultation
             </Link>
             <a
-              href={`https://wa.me/919876543210?text=Hello,%20I%20would%20like%20to%20know%20more%20about%20your%20event%20services.`}
+              href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hello, I would like to know more about your event services.')}`}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-gold-outline px-8 py-4 text-xs font-semibold uppercase tracking-widest rounded-sm w-full sm:w-auto text-center"

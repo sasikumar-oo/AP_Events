@@ -28,7 +28,7 @@ export default function About() {
           .from('site_settings')
           .select('value')
           .eq('key', 'about_content')
-          .single()
+          .maybeSingle()
         if (data && data.value) {
           setContent(data.value)
         }

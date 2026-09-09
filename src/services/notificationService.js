@@ -1,27 +1,28 @@
 /**
  * Notification Service for AP Events
- * Handles Email and WhatsApp notifications for client inquiries and bookings.
+ * Handles Email and Automated Background WhatsApp notifications sent directly to Admin on client form submission.
  */
 
-// AP Events Concierge WhatsApp Hotline Number
-export const AP_EVENTS_WHATSAPP_NUMBER = '919150226356' // +91 91502 26356
+// Configurable Admin Details
+export const ADMIN_WHATSAPP_NUMBER = import.meta.env.VITE_ADMIN_WHATSAPP || '919150226356' // +91 91502 26356
+export const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || 'info@apevents.com'
 
 /**
- * Formats and generates a WhatsApp Click-to-Chat URL for an inquiry
+ * Formats and generates a WhatsApp Click-to-Chat URL for Admin notification
  */
-export function generateWhatsAppUrl({ name, phone, email, eventType, eventDate, message, recipientNumber = AP_EVENTS_WHATSAPP_NUMBER }) {
+export function generateAdminWhatsAppUrl({ name, phone, email, eventType, eventDate, message, recipientNumber = ADMIN_WHATSAPP_NUMBER }) {
   const cleanRecipient = recipientNumber.replace(/\D/g, '')
   
-  const textMessage = `✨ *NEW EVENT INQUIRY | AP EVENTS* ✨
+  const textMessage = `🚨 *NEW EVENT LEAD SUBMITTED | AP EVENTS ADMIN* 🚨
 ----------------------------------
-👤 *Name:* ${name || 'N/A'}
-📞 *Phone:* ${phone || 'N/A'}
-✉️ *Email:* ${email || 'N/A'}
-🎉 *Service:* ${eventType || 'General Event Inquiry'}
-📅 *Target Date:* ${eventDate || 'To be decided'}
-📝 *Message/Notes:* ${message || 'No additional details provided.'}
+👤 *Client Name:* ${name || 'N/A'}
+📞 *Client Phone:* ${phone || 'N/A'}
+✉️ *Client Email:* ${email || 'N/A'}
+🎉 *Event Category:* ${eventType || 'General Event Inquiry'}
+📅 *Requested Date:* ${eventDate || 'To be decided'}
+📝 *Special Notes:* ${message || 'No additional details provided.'}
 ----------------------------------
-Sent via AP Events Digital Portal`
+📌 *Action:* Please review & contact client within 2 hours.`
 
   return `https://wa.me/${cleanRecipient}?text=${encodeURIComponent(textMessage)}`
 }
@@ -31,7 +32,6 @@ Sent via AP Events Digital Portal`
  */
 export function generateAdminReplyWhatsAppUrl({ clientName, clientPhone, eventType }) {
   const cleanPhone = clientPhone.replace(/\D/g, '')
-  // If no country code, default to India +91
   const formattedPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone
 
   const replyText = `Hello ${clientName}, thank you for contacting *AP Events* regarding your upcoming *${eventType}*! Our senior event planner is ready to assist you. How can we help bring your dream event to life?`
@@ -40,24 +40,29 @@ export function generateAdminReplyWhatsAppUrl({ clientName, clientPhone, eventTy
 }
 
 /**
- * Sends Email notification via Web3Forms / REST Email Service
+ * Sends Email Notification to Admin via Web3Forms (optional)
  */
-export async function sendEmailNotification({ name, phone, email, eventType, eventDate, message, apiKey = '' }) {
+export async function sendAdminEmailNotification({ name, phone, email, eventType, eventDate, message, apiKey = '' }) {
   try {
-    // If Web3Forms access key is configured or fallback public endpoint
-    const accessKey = apiKey || import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || 'YOUR_ACCESS_KEY'
+    const accessKey = apiKey || import.meta.env.VITE_WEB3FORMS_ACCESS_KEY
+
+    // If Web3Forms key is not configured, skip email fetch silently without error
+    if (!accessKey || accessKey === 'YOUR_ACCESS_KEY') {
+      return { success: false, message: 'Web3Forms key not configured. Skipped email fetch.' }
+    }
 
     const payload = {
       access_key: accessKey,
-      subject: `🎉 New Event Lead: ${name} - ${eventType}`,
-      from_name: 'AP Events Inquiry System',
+      subject: `🚨 NEW LEAD: ${name} requested ${eventType}`,
+      from_name: 'AP Events Notification Desk',
+      to_email: ADMIN_EMAIL,
       replyto: email || 'no-reply@apevents.com',
-      name,
-      phone,
-      email: email || 'Not Provided',
+      client_name: name,
+      client_phone: phone,
+      client_email: email || 'Not Provided',
       event_type: eventType,
       event_date: eventDate || 'Unspecified',
-      message: message || 'N/A',
+      notes: message || 'N/A',
     }
 
     const res = await fetch('https://api.web3forms.com/submit', {
@@ -72,22 +77,75 @@ export async function sendEmailNotification({ name, phone, email, eventType, eve
     const data = await res.json()
     return { success: data.success, message: data.message }
   } catch (error) {
-    console.warn('Email notification error:', error)
+    console.warn('Admin Email notification error:', error)
     return { success: false, error: error.message }
   }
 }
 
 /**
- * Direct mailto trigger fallback
+ * Sends Automated Background WhatsApp Notification directly to Admin's WhatsApp phone
  */
-export function generateMailtoUrl({ name, phone, email, eventType, eventDate, message, adminEmail = 'info@apevents.com' }) {
-  const subject = `Inquiry for ${eventType} - ${name}`
-  const body = `Name: ${name}
-Phone: ${phone}
-Email: ${email || 'N/A'}
-Event Type: ${eventType}
-Target Date: ${eventDate || 'N/A'}
-Message: ${message || 'N/A'}`
+export async function sendAdminWhatsAppNotification({ name, phone, email, eventType, eventDate, message }) {
+  const waUrl = generateAdminWhatsAppUrl({ name, phone, email, eventType, eventDate, message })
 
-  return `mailto:${adminEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+  // 1. CallMeBot Free WhatsApp Push Gateway
+  const callmebotApiKey = import.meta.env.VITE_CALLMEBOT_APIKEY
+  const targetPhone = ADMIN_WHATSAPP_NUMBER.replace(/\D/g, '')
+
+  if (callmebotApiKey) {
+    try {
+      const alertMsg = `🚨 *NEW WEBSITE INQUIRY RECEIVED* 🚨\nName: ${name}\nPhone: ${phone}\nEvent: ${eventType}\nDate: ${eventDate || 'TBD'}\nNotes: ${message || 'N/A'}`
+      const callmebotUrl = `https://api.callmebot.com/whatsapp.php?phone=+${targetPhone}&text=${encodeURIComponent(alertMsg)}&apikey=${callmebotApiKey}`
+      
+      // Fire callmebot request in background
+      fetch(callmebotUrl, { mode: 'no-cors' }).catch(e => console.warn('CallMeBot fetch background warning:', e))
+    } catch (err) {
+      console.warn('CallMeBot automated WhatsApp notify error:', err)
+    }
+  }
+
+  // 2. Custom Webhook WhatsApp Gateway (UltraMsg / Twilio / Meta API)
+  const gatewayUrl = import.meta.env.VITE_WHATSAPP_GATEWAY_URL
+  const gatewayToken = import.meta.env.VITE_WHATSAPP_GATEWAY_TOKEN
+
+  if (gatewayUrl && gatewayToken) {
+    try {
+      await fetch(gatewayUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: gatewayToken,
+          to: targetPhone,
+          body: `New Website Inquiry Alert: ${name} (${phone}) requested ${eventType} on ${eventDate || 'TBD'}`
+        })
+      })
+    } catch (err) {
+      console.warn('WhatsApp gateway webhook error:', err)
+    }
+  }
+
+  return waUrl
+}
+
+/**
+ * Combined Master Function: Triggers both Email & Automated Background WhatsApp notifications to Admin
+ */
+export async function notifyAdminOnInquiry({ name, phone, email, eventType, eventDate, message, autoOpenWhatsApp = true }) {
+  // 1. Dispatch Admin Email Notification
+  const emailPromise = sendAdminEmailNotification({ name, phone, email, eventType, eventDate, message })
+
+  // 2. Dispatch Automated Background WhatsApp Notification
+  const waUrl = await sendAdminWhatsAppNotification({ name, phone, email, eventType, eventDate, message })
+
+  // 3. Open WhatsApp to notify Admin directly if autoOpen is active
+  if (autoOpenWhatsApp && typeof window !== 'undefined') {
+    try {
+      window.open(waUrl, '_blank')
+    } catch (e) {
+      console.warn('Popup blocked for WhatsApp auto-open:', e)
+    }
+  }
+
+  const emailResult = await emailPromise
+  return { waUrl, emailResult }
 }

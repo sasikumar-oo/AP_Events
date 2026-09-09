@@ -7,6 +7,7 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import FloatingWhatsApp from './components/FloatingWhatsApp'
 import ProtectedRoute from './components/ProtectedRoute'
+import ScrollToTop from './components/ScrollToTop'
 
 // Public Pages
 import Home from './pages/Home'
@@ -23,6 +24,7 @@ import AdminLayout from './admin/AdminLayout'
 import AdminLogin from './admin/AdminLogin'
 import AdminDashboard from './admin/AdminDashboard'
 import EventManager from './admin/EventManager'
+import ServicesManager from './admin/ServicesManager'
 import GalleryManager from './admin/GalleryManager'
 import ContentManager from './admin/ContentManager'
 import EnquiryManager from './admin/EnquiryManager'
@@ -45,6 +47,7 @@ export default function App() {
   return (
     <AuthProvider>
       <Router>
+        <ScrollToTop />
         <Routes>
           {/* Public Website Routes */}
           <Route element={<PublicLayout />}>
@@ -71,6 +74,7 @@ export default function App() {
           >
             <Route index element={<AdminDashboard />} />
             <Route path="events" element={<EventManager />} />
+            <Route path="services" element={<ServicesManager />} />
             <Route path="gallery" element={<GalleryManager />} />
             <Route path="content" element={<ContentManager />} />
             <Route path="enquiries" element={<EnquiryManager />} />
